@@ -1,0 +1,1 @@
+when exporting the application you need to manually copy the PNGs, GIFs, and PixelBrite_Patterns folders. The Processing IDE won't copy these for you.
