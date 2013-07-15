@@ -1,0 +1,114 @@
+	@scriptname="SetPixel test, use with MAS script effect";
+@author="";
+@version="";
+@description="";
+
+color col;
+
+int maxX,maxY,x,y;
+int buf[];
+float opacity[]; //this is the opacity associated with each logical pixel			
+float width[] = {0};//the width of the logical pixel
+  
+void InitEffect()
+ {
+    maxX=GetMatrixWidth();
+    maxY=GetMatrixHeight();
+	
+ }
+void RenderEffect()
+ {
+ 	 
+    GetAllNoteValues(buf); //buf includes 0-127 values, but I'm only going to use 0-59 
+    //Clear();
+    //the Close Encounters color organ is a 12x5 grid
+	float px;
+	float py;
+	   	
+    for (int y=0;y<5;y++){
+		for (int x=0;x<12;x++){
+			
+			int i = y*12+x;
+			px = (float)x/12.0; //normalized position 
+            py = (float)y/5.0;  //normalized position       			
+			
+			//triggering
+			if (buf[i]>0){                  //if the note is triggered, set the opacity to max
+				opacity[i]=1.0;
+				width[i]+=0.1; 
+				if (width[i]>10.0)width[i]=10.0;               				        				
+			}                                              
+			else{
+				//width[i]-=0.03;
+				//if (width[i]<0)width[i]=0.0;
+				opacity[i]-=0.2;			//if the note is NOT triggered, decrement the opacity    		
+				if (opacity[i]<0) {
+					opacity[i]=0.0;    
+					width[i]=0.0;
+				}
+				      
+			}
+			//each column get a different color
+			col = column2Color(x);         			
+			        			
+			//the color is dimmed
+			color c = {col.r*opacity[i],col.g*opacity[i],col.b*opacity[i]};         			
+			float w = 1/12.0;
+			//always draw the line
+			if (opacity[i]>0)
+			DrawVectorLine(c,px-width[i]*1/12.0/2.0,py,px+width[i]*1/12.0/2.0,py);
+			//DrawVectorRect(c,px-width[i]*1/12.0/2.0,py,px+width[i]*1/12.0,1/5.0);
+			//FillVectorRect(c,px,py,1/12.0*width[i],1/5.0);    			
+		}                                       
+	}
+
+    //TRACE(opacity[0]);
+	
+	
+ }
+void MatrixSizeChanged()
+ {
+    InitEffect();
+ }
+color column2Color(int x){
+				color color_value;
+				switch (x){
+					case 0:
+						color_value = RED;
+						break;
+					case 1:
+						color_value = ORANGE;
+						break;
+					case 2:
+						color_value = YELLOW;
+						break;
+					case 3:
+						color_value = GREEN;
+						break;
+					case 4:
+						color_value = TEAL;
+						break;
+					case 5:
+						color_value = BLUE;
+						break;
+					case 6:
+						color_value = PURPLE;
+						break;
+					case 7:
+						color_value = MAGENTA;
+						break;
+					case 8:
+						color_value = WHITE;
+						break;
+					case 9:
+						color_value = SKY;
+						break;
+					case 10:
+						color_value = GOLD;
+						break;
+					case 11:
+						color_value = SILVER;
+						break;
+				}
+				return color_value;				
+}
